@@ -556,16 +556,10 @@ if uploaded_file is not None:
         col1, col2 = st.columns(2)
         
         with col1:
-            results_json = {
-                "credit_score": credit_score,
-                "rating": rating,
-                "missing_count": results.get("missing_count", 0),
-                "missing_fields": results.get("missing_fields", {}),
-                "personal_data": normalized.get("personal_data", {}),
-                "income_analysis": normalized.get("income_analysis", {}),
-            }
+            results_json = dict(normalized)
+            results_json["credit_score"] = credit_score
             st.download_button(
-                label="📥 Download Results (JSON)",
+                label="📥 Download Validated Data (JSON)",
                 data=json.dumps(results_json, indent=2, default=str),
                 file_name=f"credit_score_{results['uploaded_file_name'].split('.')[0]}.json",
                 mime="application/json"
