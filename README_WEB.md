@@ -126,6 +126,15 @@ streamlit run app.py
 3. Connect your GitHub repository
 4. Select the app.py file and deploy
 
+Use these settings for this repository:
+- **Repository:** `penospatrick/ZurichCreditAnalysis`
+- **Branch:** `main`
+- **Main file:** `app.py`
+
+The Streamlit deployment is the authoritative scoring app. GitHub Pages can only
+serve the static browser preview because it cannot execute Python or the saved
+LightGBM model.
+
 ### Deploy to Other Platforms
 - **Heroku**: Create a Procfile with `web: streamlit run app.py`
 - **AWS/Azure**: Use container deployment with Docker

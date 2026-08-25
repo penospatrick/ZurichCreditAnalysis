@@ -409,13 +409,13 @@ if uploaded_file is not None:
                 
                 missing_fields = validate_fields(normalized)
                 missing_count = sum(1 for feature in features if isna(feature) or feature == -1)
-                credit_score = None if missing_count >= 5 else make_credit_score(features)
+                credit_score = make_credit_score(features)
                 
                 st.status("Complete!", state="complete")
                 progress_bar.progress(100)
                 
                 # Determine rating
-                if credit_score is None:
+                if missing_count >= 5:
                     color = "⚠️"
                     rating = "Too many missing data fields"
                 elif credit_score >= 75:
@@ -433,7 +433,7 @@ if uploaded_file is not None:
                 
                 # Store results in session state
                 st.session_state.results = {
-                    "credit_score": int(credit_score) if credit_score is not None else None,
+                    "credit_score": int(credit_score),
                     "rating": rating,
                     "color": color,
                     "missing_fields": missing_fields,
