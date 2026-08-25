@@ -67,6 +67,7 @@ def validate_fields(data, essential_fields=ESSENTIAL_FIELDS):
     missing_fields = {}
     for k, v in essential_fields.items():
         subset = data.get(k, None)
+        missing = None
         if isna(subset):
             missing_fields[k] = v
         elif isinstance(v, dict):

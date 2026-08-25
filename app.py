@@ -295,6 +295,7 @@ def validate_fields(data, essential_fields=ESSENTIAL_FIELDS):
     missing_fields = {}
     for k, v in essential_fields.items():
         subset = data.get(k, None)
+        missing = None
         if isna(subset):
             missing_fields[k] = v
         elif isinstance(v, dict):
@@ -406,13 +407,18 @@ if uploaded_file is not None:
                 st.status("Calculating credit score...", state="running")
                 progress_bar.progress(90)
                 
-                credit_score = make_credit_score(features)
+                missing_fields = validate_fields(normalized)
+                missing_count = sum(1 for feature in features if isna(feature) or feature == -1)
+                credit_score = None if missing_count >= 5 else make_credit_score(features)
                 
                 st.status("Complete!", state="complete")
                 progress_bar.progress(100)
                 
                 # Determine rating
-                if credit_score >= 75:
+                if credit_score is None:
+                    color = "⚠️"
+                    rating = "Too many missing data fields"
+                elif credit_score >= 75:
                     color = "🟢"
                     rating = "Excellent"
                 elif credit_score >= 60:
@@ -427,9 +433,11 @@ if uploaded_file is not None:
                 
                 # Store results in session state
                 st.session_state.results = {
-                    "credit_score": int(credit_score),
+                    "credit_score": int(credit_score) if credit_score is not None else None,
                     "rating": rating,
                     "color": color,
+                    "missing_fields": missing_fields,
+                    "missing_count": missing_count,
                     "normalized": normalized,
                     "uploaded_file_name": uploaded_file.name
                 }
@@ -465,7 +473,7 @@ if uploaded_file is not None:
                 <div style="background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%); border: 1px solid #e5e7eb; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
                     <p style="color: #6b7280; font-size: 0.9rem; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Credit Score</p>
                     <div style="display: flex; align-items: baseline; gap: 1rem;">
-                        <span style="font-size: 3.5rem; font-weight: 700; background: linear-gradient(135deg, #123b78 0%, #2563eb 70%, #facc15 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{credit_score}</span>
+                        <span style="font-size: 3.5rem; font-weight: 700; background: linear-gradient(135deg, #123b78 0%, #2563eb 70%, #facc15 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{credit_score if credit_score is not None else 'N/A'}</span>
                         <span style="font-size: 1.2rem; color: #6b7280;">/100</span>
                     </div>
                     <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
@@ -551,6 +559,8 @@ if uploaded_file is not None:
             results_json = {
                 "credit_score": credit_score,
                 "rating": rating,
+                "missing_count": results.get("missing_count", 0),
+                "missing_fields": results.get("missing_fields", {}),
                 "personal_data": normalized.get("personal_data", {}),
                 "income_analysis": normalized.get("income_analysis", {}),
             }

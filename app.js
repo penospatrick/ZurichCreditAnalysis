@@ -6,7 +6,16 @@ const resetButton = document.querySelector('#reset-button');
 const analyzeButton = document.querySelector('#analyze-button');
 const fileList = document.querySelector('#file-list');
 const themeToggle = document.querySelector('.theme-toggle');
+const exportButton = document.querySelector('#export-button');
+const missingData = document.querySelector('#missing-data');
 let selectedFiles = [];
+let latestReport = null;
+
+const requiredFields = {
+  personal_data: ['name', 'present_address', 'present_address_tenure', 'contact_no', 'birthplace', 'education', 'parents_name', 'parents_address', 'date_applied', 'unit_applied', 'loan_amount', 'loan_terms', 'housing_status', 'dob', 'age', 'marital_status', 'n_children', 'n_dependents', 'dependent_ages'],
+  income_analysis: ['gross_income', 'monthly_amortization'],
+  officer_assessment: ['loan_purpose', 'unit_payor', 'unit_rider', 'rider_license', 'cell_signal_status', 'prepared_by', 'remarks']
+};
 
 const clean = value => String(value ?? '').replace(/\s+/g, ' ').trim();
 const isValue = value => clean(value) !== '';
@@ -25,28 +34,28 @@ function allCells(workbook) {
 }
 
 function assess(rows, workbook) {
-  const labels = rows.map(row => row.field.toLowerCase());
-  const keywords = ['name', 'income', 'address', 'loan', 'credit', 'employment', 'residence', 'remarks'];
-  const detected = keywords.filter(keyword => labels.some(label => label.includes(keyword))).length;
-  const score = Math.min(100, Math.max(1, 35 + detected * 8 + Math.min(25, rows.length / 4)));
-  const rounded = Math.round(score);
-  const rating = rounded >= 75 ? 'Strong profile' : rounded >= 60 ? 'Good profile' : rounded >= 40 ? 'Review recommended' : 'More information needed';
-  return { score: rounded, rating, detected, sheets: workbook.SheetNames.length };
+  const values = new Map(rows.map(row => [row.field.toLowerCase().replace(/[^a-z0-9]+/g, '_'), row.value]));
+  const missing = Object.fromEntries(Object.entries(requiredFields).map(([section, fields]) => [section, fields.filter(field => !isValue(values.get(field)))]));
+  Object.keys(missing).forEach(section => { if (!missing[section].length) delete missing[section]; });
+  const missingCount = Object.values(missing).reduce((total, fields) => total + fields.length, 0);
+  return { score: null, rating: 'Backend analysis required', detected: rows.length - missingCount, sheets: workbook.SheetNames.length, missing, missingCount };
 }
 
 function render(file, workbook) {
   const rows = allCells(workbook).slice(0, 120);
   const assessment = assess(rows, workbook);
+  latestReport = { file: file.name, sheets: workbook.SheetNames, fields: rows, assessment };
   document.querySelector('#file-name').textContent = file.name;
-  document.querySelector('#score').textContent = assessment.score;
+  document.querySelector('#score').textContent = 'N/A';
   document.querySelector('#rating').textContent = assessment.rating;
   document.querySelector('#fields').textContent = assessment.detected;
   document.querySelector('#sheets').textContent = assessment.sheets;
   document.querySelector('#assessment-title').textContent = assessment.rating;
-  document.querySelector('#assessment-copy').textContent = `${rows.length} populated workbook entries were found across ${assessment.sheets} sheet${assessment.sheets === 1 ? '' : 's'}.`;
-  document.querySelector('#progress-bar').style.width = `${assessment.score}%`;
+  document.querySelector('#assessment-copy').textContent = `${rows.length} populated workbook entries were found. Run the Streamlit backend for the trained LightGBM score.`;
+  document.querySelector('#progress-bar').style.width = '0%';
+  missingData.innerHTML = assessment.missingCount ? `<strong>Missing essential data (${assessment.missingCount})</strong><ul>${Object.entries(assessment.missing).flatMap(([section, fields]) => fields.map(field => `<li>${escapeHtml(section)}: ${escapeHtml(field)}</li>`)).join('')}</ul>` : '<strong>All essential fields detected</strong>';
   document.querySelector('#assessment-list').innerHTML = [
-    `<div><strong>${assessment.detected >= 5 ? '✓' : '!'}</strong> Core report sections detected</div>`,
+    `<div><strong>${assessment.missingCount < 5 ? '✓' : '!'}</strong> ${assessment.missingCount < 5 ? 'Enough data for backend scoring' : 'Too many missing fields for scoring'}</div>`,
     `<div><strong>${rows.length ? '✓' : '!'}</strong> Workbook contains readable data</div>`,
     `<div><strong>i</strong> Review the extracted values before making a lending decision</div>`
   ].join('');
@@ -88,4 +97,13 @@ dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragging
 dropzone.addEventListener('drop', event => { event.preventDefault(); dropzone.classList.remove('dragging'); selectedFiles = [...event.dataTransfer.files]; updateFileList(); });
 dropzone.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') fileInput.click(); });
 resetButton.addEventListener('click', () => { fileInput.value = ''; selectedFiles = []; updateFileList(); results.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); });
+exportButton.addEventListener('click', () => {
+  if (!latestReport) return;
+  const blob = new Blob([JSON.stringify(latestReport, null, 2)], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `${latestReport.file.replace(/\.[^.]+$/, '')}_validated.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+});
 themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark'); themeToggle.textContent = document.body.classList.contains('dark') ? '☀' : '◐'; });

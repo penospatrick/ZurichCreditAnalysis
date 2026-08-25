@@ -40,13 +40,13 @@
     <section class="results" id="results" hidden>
       <div class="results-heading"><div><p class="eyebrow">Report overview</p><h2 id="file-name">Processed report</h2></div><button class="button secondary" id="reset-button" type="button">Process another</button></div>
       <div class="metric-grid">
-        <article class="metric"><span>Preliminary score</span><strong id="score">--</strong><small id="rating">Waiting for report</small></article>
+        <article class="metric"><span>Credit score</span><strong id="score">--</strong><small id="rating">Backend analysis required</small></article>
         <article class="metric"><span>Fields detected</span><strong id="fields">--</strong><small>Across workbook sheets</small></article>
         <article class="metric"><span>Sheets found</span><strong id="sheets">--</strong><small>Readable Excel tabs</small></article>
       </div>
       <div class="result-grid">
         <article class="card"><div class="card-heading"><div><p class="eyebrow">Workbook contents</p><h3>Extracted preview</h3></div><span class="file-type">XLSX</span></div><div class="table-wrap"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody id="preview-body"></tbody></table></div></article>
-        <article class="card assessment"><p class="eyebrow">Assessment</p><h3 id="assessment-title">Report ready</h3><div class="progress"><span id="progress-bar"></span></div><p id="assessment-copy">Your report has been inspected in this browser.</p><div class="assessment-list" id="assessment-list"></div></article>
+        <article class="card assessment"><p class="eyebrow">Assessment</p><h3 id="assessment-title">Report ready</h3><div class="progress"><span id="progress-bar"></span></div><p id="assessment-copy">Your report has been inspected in this browser.</p><div class="assessment-list" id="assessment-list"></div><div class="missing-data" id="missing-data"></div><button class="button secondary export-button" id="export-button" type="button">Download JSON</button></article>
       </div>
       <p class="model-note">This is a preliminary browser assessment. The original Python LightGBM model remains available in <code>app.py</code> for server-side scoring.</p>
     </section>

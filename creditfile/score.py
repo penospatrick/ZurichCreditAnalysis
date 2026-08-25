@@ -9,7 +9,8 @@ import lightgbm as lgb
 # Artifacts
 RESOURCE_LOC = files(__package__)
 with as_file(RESOURCE_LOC.joinpath('artifacts/model.txt')) as eml:
-    classifier = lgb.Booster(model_file=eml)
+    model_text = eml.read_text(encoding='utf-8').replace('\r\n', '\n')
+    classifier = lgb.Booster(model_str=model_text)
 with as_file(RESOURCE_LOC.joinpath('artifacts/score-scaler.pickle')) as eml:
     scaler = joblib.load(eml)
 
