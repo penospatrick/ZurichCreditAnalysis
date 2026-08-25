@@ -3,6 +3,10 @@ const dropzone = document.querySelector('#dropzone');
 const results = document.querySelector('#results');
 const previewBody = document.querySelector('#preview-body');
 const resetButton = document.querySelector('#reset-button');
+const analyzeButton = document.querySelector('#analyze-button');
+const fileList = document.querySelector('#file-list');
+const themeToggle = document.querySelector('.theme-toggle');
+let selectedFiles = [];
 
 const clean = value => String(value ?? '').replace(/\s+/g, ' ').trim();
 const isValue = value => clean(value) !== '';
@@ -56,8 +60,8 @@ function escapeHtml(value) {
 }
 
 async function processFile(file) {
-  if (!file || !file.name.toLowerCase().endsWith('.xlsx')) {
-    alert('Please choose an Excel .xlsx credit report.');
+  if (!file || !/\.xlsx?$/i.test(file.name)) {
+    alert('Please choose an Excel .xlsx or .xls credit report.');
     return;
   }
   try {
@@ -69,8 +73,19 @@ async function processFile(file) {
   }
 }
 
-fileInput.addEventListener('change', event => processFile(event.target.files[0]));
+function updateFileList() {
+  fileList.textContent = selectedFiles.map(file => file.name).join(', ');
+  analyzeButton.disabled = selectedFiles.length === 0;
+}
+
+fileInput.addEventListener('change', event => {
+  selectedFiles = [...event.target.files];
+  updateFileList();
+});
+analyzeButton.addEventListener('click', () => processFile(selectedFiles[0]));
 dropzone.addEventListener('dragover', event => { event.preventDefault(); dropzone.classList.add('dragging'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragging'));
-dropzone.addEventListener('drop', event => { event.preventDefault(); dropzone.classList.remove('dragging'); processFile(event.dataTransfer.files[0]); });
-resetButton.addEventListener('click', () => { fileInput.value = ''; results.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); });
+dropzone.addEventListener('drop', event => { event.preventDefault(); dropzone.classList.remove('dragging'); selectedFiles = [...event.dataTransfer.files]; updateFileList(); });
+dropzone.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') fileInput.click(); });
+resetButton.addEventListener('click', () => { fileInput.value = ''; selectedFiles = []; updateFileList(); results.hidden = true; window.scrollTo({ top: 0, behavior: 'smooth' }); });
+themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark'); themeToggle.textContent = document.body.classList.contains('dark') ? '☀' : '◐'; });

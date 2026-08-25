@@ -13,40 +13,28 @@
 <body>
   <header class="topbar">
     <a class="brand" href="./" aria-label="Zurich Finance Corporation home">
-      <span class="brand-mark" aria-hidden="true">
-        <span class="cube cube-top"></span><span class="cube cube-left"></span><span class="cube cube-right"></span>
-      </span>
-      <span><strong>Zurich Finance</strong><small>Corporation</small></span>
+      <span class="brand-mark" aria-hidden="true"><span class="brand-cross"></span></span>
+      <span><strong>Zurich Finance Corporation</strong><small>Motorcycle Loan Analyzer</small></span>
     </a>
-    <span class="secure-badge"><span></span> Local browser processing</span>
+    <button class="theme-toggle" type="button" aria-label="Toggle light/dark mode">◐</button>
   </header>
 
-  <main class="shell">
-    <section class="intro">
-      <div>
-        <p class="eyebrow">CIR Processing</p>
-        <h1>Credit report<br><em>processing, simplified.</em></h1>
-        <p class="lede">Upload a credit report to inspect its contents and receive a fast preliminary assessment. Your file stays in this browser.</p>
-      </div>
-      <div class="intro-stat"><strong>01</strong><span>Upload<br>and review</span></div>
+  <main class="shell analyzer-shell">
+    <section class="analyzer-intro">
+      <h1>Credit Score Analysis</h1>
+      <p>Upload Excel credit investigation files to instantly score and validate loan applications.</p>
     </section>
 
-    <section class="workspace" aria-label="Credit report processor">
-      <div class="upload-panel" id="dropzone">
-        <div class="upload-icon" aria-hidden="true">↑</div>
-        <h2>Drop your credit report here</h2>
-        <p>Excel workbook only · .xlsx</p>
-        <label class="button primary" for="file-input">Choose Excel file</label>
-        <input id="file-input" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-        <p class="privacy">Your file is read locally and is never uploaded by this page.</p>
+    <section class="analyzer-card" aria-label="Credit report analyzer">
+      <div class="upload-panel" id="dropzone" role="button" tabindex="0" aria-label="Drop zone, click or drag Excel files here">
+        <div class="upload-icon" aria-hidden="true">⇧</div>
+        <p class="drop-title">Drop your files here</p>
+        <p class="drop-help">Supports <strong>.xlsx</strong> and <strong>.xls</strong> formats</p>
+        <label class="button primary" for="file-input">Browse files</label>
+        <input id="file-input" type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" multiple>
+        <div class="file-list" id="file-list" aria-live="polite"></div>
       </div>
-      <div class="steps-panel">
-        <p class="eyebrow">Workflow</p>
-        <div class="step active"><b>01</b><span><strong>Upload report</strong><small>Select an Excel CIR file</small></span></div>
-        <div class="step"><b>02</b><span><strong>Inspect workbook</strong><small>Review sheets and extracted fields</small></span></div>
-        <div class="step"><b>03</b><span><strong>Assess profile</strong><small>See completeness and indicators</small></span></div>
-        <div class="notice"><strong>Before you begin</strong><p>Use the original credit report workbook with its report sections intact for the best results.</p></div>
-      </div>
+      <button class="button analyze-button" id="analyze-button" type="button" disabled>⌁ <span>Analyze All</span></button>
     </section>
 
     <section class="results" id="results" hidden>
@@ -63,7 +51,7 @@
       <p class="model-note">This is a preliminary browser assessment. The original Python LightGBM model remains available in <code>app.py</code> for server-side scoring.</p>
     </section>
   </main>
-  <footer><span>Zurich Finance Corporation</span><span>Confidential credit processing workspace</span></footer>
+  <footer><span>Deployed on August 25, 2025</span></footer>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <script src="app.js"></script>
 </body>
