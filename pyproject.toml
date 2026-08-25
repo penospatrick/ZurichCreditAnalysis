@@ -1,0 +1,9 @@
+# Created 2023-10-06
+[project]
+name = "creditfile"
+version = "0.2"
+description = "Processing Zurich credit files."
+authors = [{name = "Bingbong"}]
+
+[tool.setuptools.package-data]
+"creditfile.artifacts" = ["*.txt", "*.pickle"]
