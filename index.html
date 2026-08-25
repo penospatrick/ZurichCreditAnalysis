@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Zurich Finance Corporation credit report processing">
+  <title>Zurich Finance Corporation | Credit Processing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Zurich Finance Corporation home">
+      <span class="brand-mark" aria-hidden="true">
+        <span class="cube cube-top"></span><span class="cube cube-left"></span><span class="cube cube-right"></span>
+      </span>
+      <span><strong>Zurich Finance</strong><small>Corporation</small></span>
+    </a>
+    <span class="secure-badge"><span></span> Local browser processing</span>
+  </header>
+
+  <main class="shell">
+    <section class="intro">
+      <div>
+        <p class="eyebrow">CIR Processing</p>
+        <h1>Credit report<br><em>processing, simplified.</em></h1>
+        <p class="lede">Upload a credit report to inspect its contents and receive a fast preliminary assessment. Your file stays in this browser.</p>
+      </div>
+      <div class="intro-stat"><strong>01</strong><span>Upload<br>and review</span></div>
+    </section>
+
+    <section class="workspace" aria-label="Credit report processor">
+      <div class="upload-panel" id="dropzone">
+        <div class="upload-icon" aria-hidden="true">↑</div>
+        <h2>Drop your credit report here</h2>
+        <p>Excel workbook only · .xlsx</p>
+        <label class="button primary" for="file-input">Choose Excel file</label>
+        <input id="file-input" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+        <p class="privacy">Your file is read locally and is never uploaded by this page.</p>
+      </div>
+      <div class="steps-panel">
+        <p class="eyebrow">Workflow</p>
+        <div class="step active"><b>01</b><span><strong>Upload report</strong><small>Select an Excel CIR file</small></span></div>
+        <div class="step"><b>02</b><span><strong>Inspect workbook</strong><small>Review sheets and extracted fields</small></span></div>
+        <div class="step"><b>03</b><span><strong>Assess profile</strong><small>See completeness and indicators</small></span></div>
+        <div class="notice"><strong>Before you begin</strong><p>Use the original credit report workbook with its report sections intact for the best results.</p></div>
+      </div>
+    </section>
+
+    <section class="results" id="results" hidden>
+      <div class="results-heading"><div><p class="eyebrow">Report overview</p><h2 id="file-name">Processed report</h2></div><button class="button secondary" id="reset-button" type="button">Process another</button></div>
+      <div class="metric-grid">
+        <article class="metric"><span>Preliminary score</span><strong id="score">--</strong><small id="rating">Waiting for report</small></article>
+        <article class="metric"><span>Fields detected</span><strong id="fields">--</strong><small>Across workbook sheets</small></article>
+        <article class="metric"><span>Sheets found</span><strong id="sheets">--</strong><small>Readable Excel tabs</small></article>
+      </div>
+      <div class="result-grid">
+        <article class="card"><div class="card-heading"><div><p class="eyebrow">Workbook contents</p><h3>Extracted preview</h3></div><span class="file-type">XLSX</span></div><div class="table-wrap"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody id="preview-body"></tbody></table></div></article>
+        <article class="card assessment"><p class="eyebrow">Assessment</p><h3 id="assessment-title">Report ready</h3><div class="progress"><span id="progress-bar"></span></div><p id="assessment-copy">Your report has been inspected in this browser.</p><div class="assessment-list" id="assessment-list"></div></article>
+      </div>
+      <p class="model-note">This is a preliminary browser assessment. The original Python LightGBM model remains available in <code>app.py</code> for server-side scoring.</p>
+    </section>
+  </main>
+  <footer><span>Zurich Finance Corporation</span><span>Confidential credit processing workspace</span></footer>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
